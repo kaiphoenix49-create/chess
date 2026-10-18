@@ -25,7 +25,10 @@ export function useAuth() {
         const redirect = new URL('/', window.location.origin)
         const gameId = new URLSearchParams(window.location.search).get('game')
         if (gameId) redirect.searchParams.set('game', gameId)
-        const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: redirect.href } })
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo: redirect.href, ...(provider === 'google' ? { queryParams: { prompt: 'select_account' } } : {}) },
+        })
         if (error) setError('Sign-in is unavailable. Please try again.')
     }
     const signOut = async () => {

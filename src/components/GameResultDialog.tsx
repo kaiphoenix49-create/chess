@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react'
-import { getGameOutcome } from '../gameOutcome'
 
-type Result = NonNullable<ReturnType<typeof getGameOutcome>>
+type Result = { heading: string; outcome: 'won' | 'lost' | 'draw'; winner: 'w' | 'b' | null; reason: string }
 
-export default function GameResultDialog({ result, playerColor, opponent, online, onNewGame }: {
-    result: Result; playerColor: 'w' | 'b'; opponent: string; online: boolean; onNewGame: () => void;
+export default function GameResultDialog({ result, playerColor, opponent, online, onNewGame, rating }: {
+    result: Result; playerColor: 'w' | 'b'; opponent: string; online: boolean; onNewGame: () => void; rating?: string | null;
 }) {
     const dialog = useRef<HTMLDialogElement>(null)
     const reviewButton = useRef<HTMLButtonElement>(null)
@@ -42,6 +41,7 @@ export default function GameResultDialog({ result, playerColor, opponent, online
             <h2 id="game-result-heading">{result.heading}</h2>
             <p className="result-title">{title}</p>
             <p id="game-result-description">{result.reason}</p>
+            {rating && <p className="rating-change">{rating}</p>}
             <div className="result-score" aria-label="Final score">
                 <div><span>{playerColor === 'w' ? 'You' : opponent}</span><small>White</small><strong>{whiteResult}</strong></div>
                 <span className="score-divider" aria-hidden="true">–</span>

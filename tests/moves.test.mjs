@@ -13,6 +13,7 @@ test('reject outsider, wrong turn, stale version, illegal move and expired game'
   assert.throws(()=>validateMove(base,'white',{...move,version:0}),/board changed/)
   assert.throws(()=>validateMove(base,'white',{...move,to:'e5'}),/Invalid move/)
   assert.throws(()=>validateMove({...base,expires_at:'2000-01-01'},'white',move),/expired/)
+  assert.equal(validateMove({...base,expires_at:null},'white',move).move,'e2e4')
   assert.throws(()=>validateMove({...base,status:'waiting'},'white',move),/not active/)
 })
 test('checkmate records the correct result', () => {

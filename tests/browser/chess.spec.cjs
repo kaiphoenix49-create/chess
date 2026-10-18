@@ -5,7 +5,7 @@ test('real Stockfish responds; undo, reset and black-side play work without Fire
  page.on('request',r=>requests.push(r.url()))
  await page.goto('/')
  expect(await page.evaluate(()=>crossOriginIsolated)).toBe(true)
- await expect(page.getByRole('heading',{name:"GN / CHESS"})).toBeVisible()
+ await expect(page.getByRole('heading',{name:'Chess Studio'})).toBeVisible()
  await page.locator('[data-squareid="e2"]').click()
  await page.locator('[data-squareid="e4"]').click()
  await expect(page.locator('.move-list')).toContainText(/^1\. e4 \S+/,{timeout:30000})
@@ -23,8 +23,9 @@ test('real Stockfish responds; undo, reset and black-side play work without Fire
 test('mobile layout fits viewport and an invalid invitation does not break local play',async({page})=>{
  await page.setViewportSize({width:390,height:844})
  await page.goto('/?game=invalid')
- await expect(page.getByRole('heading',{name:"GN / CHESS"})).toBeVisible()
- await expect(page.getByRole('link',{name:'Built by Graphicnapkin'})).toHaveAttribute('href','https://graphicnapkin.com')
+ await expect(page.getByRole('heading',{name:'Chess Studio'})).toBeVisible()
+ await expect(page.getByRole('link',{name:'Built by Graphicnapkin'})).toHaveCount(0)
+ await expect(page.getByRole('link',{name:'Source code'})).toHaveCount(0)
  await expect(page.locator('body')).not.toContainText(/YOUR NEXT MOVE|Let's play\.|A quiet place|Across the board|The opening is yours/)
  for (const width of [320,390,768,980,1024,1440]) {
   await page.setViewportSize({width,height:900})
@@ -45,7 +46,7 @@ test('keyboard moves, refresh recovery and pawn underpromotion work',async({page
  const history=await page.locator('.move-list').textContent()
  await page.reload()
  await expect(page.locator('.move-list')).toHaveText(history)
- await page.evaluate(()=>sessionStorage.setItem('gnap-chess-local-v1','[SetUp "1"]\n[FEN "7k/P7/8/8/8/8/8/7K w - - 0 1"]\n\n*'))
+ await page.evaluate(pgn=>localStorage.setItem('gnap-chess-local-v1',JSON.stringify({pgn,recordId:'00000000-0000-4000-8000-000000000099',recorded:false,color:'w',difficulty:5,resigned:false})),'[SetUp "1"]\n[FEN "7k/P7/8/8/8/8/8/7K w - - 0 1"]\n\n*')
  await page.reload()
  await page.locator('[data-squareid="a7"]').click()
  await page.locator('[data-squareid="a8"]').click()
@@ -84,7 +85,7 @@ test('provider buttons render local logos and the interface font loads',async({p
  await page.goto('/')
  await page.evaluate(()=>document.fonts.ready)
  expect(await page.evaluate(()=>Array.from(document.fonts).some(font=>font.family.includes('DM Sans') && font.status==='loaded'))).toBe(true)
- for(const name of ['Continue with Google','Continue with GitHub']) {
+ for(const name of ['Sign in with Google','Continue with GitHub']) {
   const button=page.getByRole('button',{name,exact:true})
   await expect(button).toBeVisible()
   await expect(button.locator('img')).toBeVisible()
